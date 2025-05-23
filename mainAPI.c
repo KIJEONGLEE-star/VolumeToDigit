@@ -39,6 +39,7 @@ void GenerateOutput(HWND hwndDlg) {
     } else if (IsDlgButtonChecked(hwndDlg, IDC_RADIO3)) {
         g_selectedInterval = 1.0;
     }
+    double currentCalculatedDb;
 
     for (int i = 0; i < 256; ++i) {
         currentCalculatedDb = g_referenceDbValue - (i * g_selectedInterval);
