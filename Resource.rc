@@ -1,0 +1,24 @@
+#include <windows.h>
+#include <commctrl.h>
+#include "resource.h"
+
+IDD_MAIN_DIALOG DIALOGEX 0, 0, 400, 600
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Volume 설정 툴                         developed by ricki.lee"
+FONT 9, "Segoe UI"
+BEGIN
+    CONTROL         "", IDC_SLIDER, TRACKBAR_CLASS, WS_TABSTOP | TBS_HORZ, 20, 20, 360, 30
+    LTEXT           "기준값: 0.0 dB", IDC_STATIC_VALUE, 20, 60, 200, 15
+
+    GROUPBOX        "간격 선택", -1, 20, 85, 360, 55
+    AUTORADIOBUTTON "0.2", IDC_RADIO1, 40, 105, 40, 15, WS_GROUP
+    AUTORADIOBUTTON "0.5", IDC_RADIO2, 100, 105, 40, 15
+    AUTORADIOBUTTON "1.0", IDC_RADIO3, 160, 105, 40, 15
+    LTEXT           "단위는 dB 혹은 % 입니다.", -1, 210, 105, 150, 15
+
+    CONTROL         "Mute", IDC_CHECK_MUTE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 20, 150, 60, 15
+    LTEXT           "최소값은 -128dB 입니다", IDC_STATIC_MIN_LABEL, 20, 170, 200, 15
+    PUSHBUTTON      "계산", IDC_CALC_BTN, 300, 150, 80, 25
+
+    EDITTEXT        IDC_OUTPUT_BOX, 20, 200, 360, 380, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+END
