@@ -104,7 +104,9 @@ INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
                 case IDC_RADIO2:
                 case IDC_RADIO3:
                     CheckRadioButton(hwndDlg, IDC_RADIO1, IDC_RADIO3, LOWORD(wParam));
-                    // GenerateOutput(hwndDlg); // 필요 시
+                    break;
+                case IDC_CALC_BTN:
+                    GenerateOutput(hwndDlg);
                     break;
                 case IDCANCEL:
                     EndDialog(hwndDlg, 0);
