@@ -17,7 +17,7 @@ BEGIN
     LTEXT           "단위는 dB 혹은 % 입니다.", -1, 210, 105, 150, 15
 
     CONTROL         "Mute", IDC_CHECK_MUTE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 20, 150, 60, 15
-    LTEXT           "최소값은 -128dB 입니다", IDC_STATIC_MIN_LABEL, 20, 170, 200, 15
+    LTEXT           "최소값은 -128dB 입니다", IDC_STATIC_MIN_VALUE, 20, 170, 200, 15
     PUSHBUTTON      "계산", IDC_CALC_BTN, 300, 150, 80, 25
 
     EDITTEXT        IDC_OUTPUT_BOX, 20, 200, 360, 380, ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
