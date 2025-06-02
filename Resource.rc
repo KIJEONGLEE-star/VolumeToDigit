@@ -29,7 +29,7 @@ PUSHBUTTON      "변환", IDC_CONVERT_BTN, 90, 305, 40, 12
 EDITTEXT        IDC_OUTPUT_BIN, 140, 305, 80, 12, ES_READONLY
 
 // 오른쪽 영역 – 보수방식 비트 계산기
-GROUPBOX        "보수방식 비트 계산기", -1, 240, 20, 260, 160
+GROUPBOX        "보수방식 비트 계산기", -1, 240, 20, 260, 300
 
 LTEXT           "최소값", -1, 250, 40, 40, 10
 EDITTEXT        IDC_COMP_MIN, 300, 40, 60, 12, WS_BORDER | WS_TABSTOP
