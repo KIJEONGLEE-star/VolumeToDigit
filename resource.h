@@ -14,6 +14,12 @@
 #define IDC_STATIC_MIN_VALUE    1009
 #define IDC_COMP_CALC_BTN       1010
 
+#define IDC_RADIO_DB           1020
+#define IDC_RADIO_BCK          1021
+#define IDC_STATIC_UNIT_LABEL  1022
+#define IDC_STATIC_UNIT_VALUE  1023
+
+
 // dB → Binary 변환 관련
 #define IDC_INPUT_DB            2001
 #define IDC_CONVERT_BTN         2002
@@ -28,3 +34,9 @@
 // 개발자 정보
 #define IDC_STATIC_CREDIT       2015
 #define IDC_COMP_UNIT_LABEL     2017
+
+#define IDC_COMP_UNIT_PERCENT     3010
+#define IDC_COMP_UNIT_CELSIUS     3011
+
+#define IDC_COMP_RADIO_PERCENT   4101
+#define IDC_COMP_RADIO_CELSIUS   4102
