@@ -10,6 +10,7 @@
 
 HWND hSlider, hStaticValue, hRadio1, hRadio2, hRadio3, hCheckMute, hCalcButton, hOutput;
 HWND hInputDb, hConvertBtn, hOutputBin;
+HWND hRadioDb, hRadioBck, hStaticUnitLabel;
 
 double g_selectedInterval = 0.5;
 double g_referenceDbValue = 0.0;
@@ -18,6 +19,16 @@ double g_referenceDbValue = 0.0;
 #define SLIDER_MAX_POS 256
 #define DB_MIN_VAL -128.0
 #define DB_MAX_VAL 128.0
+
+// 단위별 표시 텍스트
+void UpdateUnitLabel(HWND hwndDlg) {
+    if (IsDlgButtonChecked(hwndDlg, IDC_RADIO_DB) == BST_CHECKED) {
+        SetWindowText(hStaticUnitLabel, _T("단위: dB"));
+    }
+    else if (IsDlgButtonChecked(hwndDlg, IDC_RADIO_BCK) == BST_CHECKED) {
+        SetWindowText(hStaticUnitLabel, _T("단위: BCK"));
+    }
+}
 
 void UpdateReferenceValueText(HWND hwndDlg) {
     TCHAR buf[64];
@@ -39,6 +50,9 @@ void GenerateOutput(HWND hwndDlg) {
     else if (IsDlgButtonChecked(hwndDlg, IDC_RADIO2)) g_selectedInterval = 0.5;
     else if (IsDlgButtonChecked(hwndDlg, IDC_RADIO3)) g_selectedInterval = 1.0;
 
+    // 단위 확인
+    BOOL isDbUnit = (IsDlgButtonChecked(hwndDlg, IDC_RADIO_DB) == BST_CHECKED);
+
     double currentCalculatedDb;
     for (int i = 0; i < 256; ++i) {
         currentCalculatedDb = g_referenceDbValue - (i * g_selectedInterval);
@@ -52,8 +66,12 @@ void GenerateOutput(HWND hwndDlg) {
 
         if (i == 255 && muteChecked)
             _stprintf(line, _T("%s: Mute\r\n"), binaryString);
-        else
-            _stprintf(line, _T("%s: %+.1f dB\r\n"), binaryString, currentCalculatedDb);
+        else {
+            if (isDbUnit)
+                _stprintf(line, _T("%s: %+.1f dB\r\n"), binaryString, currentCalculatedDb);
+            else
+                _stprintf(line, _T("%s: %+.1f BCK\r\n"), binaryString, currentCalculatedDb);
+        }
 
         _tcscat(output, line);
     }
@@ -78,19 +96,29 @@ void ConvertDbToBinary(HWND hwndDlg) {
 
     SetWindowText(hOutputBin, binaryString);
 }
+
 void CalculateComplementBits(HWND hwndDlg)
 {
     TCHAR buf[16];
     GetDlgItemText(hwndDlg, IDC_COMP_MIN, buf, 16);
-    int minVal = _ttoi(buf); // 예: -40
+    int minVal = _ttoi(buf);
     GetDlgItemText(hwndDlg, IDC_COMP_MAX, buf, 16);
-    int maxVal = _ttoi(buf); // 예: 175
+    int maxVal = _ttoi(buf);
     GetDlgItemText(hwndDlg, IDC_COMP_BITS, buf, 16);
-    int bits = _ttoi(buf);   // 예: 5
+    int bits = _ttoi(buf);
 
     if (bits <= 0 || bits > 32 || minVal > maxVal) {
         MessageBox(hwndDlg, _T("입력 값이 잘못되었습니다."), _T("오류"), MB_OK | MB_ICONERROR);
         return;
+    }
+
+    // 단위 선택
+    TCHAR unitLabel[8];
+    if (IsDlgButtonChecked(hwndDlg, IDC_COMP_UNIT_PERCENT) == BST_CHECKED) {
+        _tcscpy(unitLabel, _T("%"));
+    }
+    else {
+        _tcscpy(unitLabel, _T("°C"));
     }
 
     int maxIndex = (1 << bits) - 1;
@@ -100,15 +128,14 @@ void CalculateComplementBits(HWND hwndDlg)
     TCHAR line[128];
 
     for (int i = 0; i <= maxIndex; ++i) {
-        double temperature = minVal + (i * step);
+        double val = minVal + (i * step);
 
-        // 이진 문자열 만들기
         TCHAR binary[33];
         for (int b = bits - 1; b >= 0; --b)
             binary[bits - 1 - b] = ((i >> b) & 1) ? _T('1') : _T('0');
         binary[bits] = _T('\0');
 
-        _stprintf(line, _T("%2d (%s) → %6.2f °C\r\n"), i, binary, temperature);
+        _stprintf(line, _T("%2d (%s) → %6.2f %s\r\n"), i, binary, val, unitLabel);
         _tcscat(output, line);
     }
 
@@ -133,12 +160,19 @@ INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
         hConvertBtn = GetDlgItem(hwndDlg, IDC_CONVERT_BTN);
         hOutputBin = GetDlgItem(hwndDlg, IDC_OUTPUT_BIN);
 
+        hRadioDb = GetDlgItem(hwndDlg, IDC_RADIO_DB);
+        hRadioBck = GetDlgItem(hwndDlg, IDC_RADIO_BCK);
+        hStaticUnitLabel = GetDlgItem(hwndDlg, IDC_COMP_UNIT_LABEL);
+
         SendMessage(hSlider, TBM_SETRANGE, TRUE, MAKELPARAM(SLIDER_MIN_POS, SLIDER_MAX_POS));
         SendMessage(hSlider, TBM_SETPOS, TRUE, SLIDER_MAX_POS / 2);
         g_referenceDbValue = DB_MIN_VAL + (SLIDER_MAX_POS / 2);
 
         CheckRadioButton(hwndDlg, IDC_RADIO1, IDC_RADIO3, IDC_RADIO2);
+        CheckRadioButton(hwndDlg, IDC_RADIO_DB, IDC_RADIO_BCK, IDC_RADIO_DB);
+        CheckRadioButton(hwndDlg, IDC_COMP_UNIT_PERCENT, IDC_COMP_UNIT_CELSIUS, IDC_COMP_UNIT_CELSIUS);
         UpdateReferenceValueText(hwndDlg);
+        UpdateUnitLabel(hwndDlg);
         GenerateOutput(hwndDlg);
         return TRUE;
     }
@@ -156,13 +190,18 @@ INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
         case IDC_RADIO3:
             CheckRadioButton(hwndDlg, IDC_RADIO1, IDC_RADIO3, LOWORD(wParam));
             break;
+        case IDC_RADIO_DB:
+        case IDC_RADIO_BCK:
+            CheckRadioButton(hwndDlg, IDC_RADIO_DB, IDC_RADIO_BCK, LOWORD(wParam));
+            UpdateUnitLabel(hwndDlg);
+            break;
         case IDC_CALC_BTN:
             GenerateOutput(hwndDlg);
             break;
         case IDC_CONVERT_BTN:
             ConvertDbToBinary(hwndDlg);
             break;
-        case IDC_COMP_CALC_BTN:        // <-- 여기로 이동
+        case IDC_COMP_CALC_BTN:
             CalculateComplementBits(hwndDlg);
             break;
         case IDCANCEL:
@@ -173,12 +212,9 @@ INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     case WM_CLOSE:
         EndDialog(hwndDlg, 0);
         return TRUE;
-
     }
     return FALSE;
 }
-
-
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
     return (int)DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN_DIALOG), NULL, DlgProc);
