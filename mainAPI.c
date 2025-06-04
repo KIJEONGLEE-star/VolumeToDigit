@@ -117,6 +117,9 @@ void CalculateComplementBits(HWND hwndDlg)
     if (IsDlgButtonChecked(hwndDlg, IDC_COMP_UNIT_PERCENT) == BST_CHECKED) {
         _tcscpy(unitLabel, _T("%"));
     }
+    else if (IsDlgButtonChecked(hwndDlg, IDC_COMP_UNIT_VOLT) == BST_CHECKED) {
+        _tcscpy(unitLabel, _T("V"));
+    }
     else {
         _tcscpy(unitLabel, _T("°C"));
     }
@@ -170,7 +173,7 @@ INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 
         CheckRadioButton(hwndDlg, IDC_RADIO1, IDC_RADIO3, IDC_RADIO2);
         CheckRadioButton(hwndDlg, IDC_RADIO_DB, IDC_RADIO_BCK, IDC_RADIO_DB);
-        CheckRadioButton(hwndDlg, IDC_COMP_UNIT_PERCENT, IDC_COMP_UNIT_CELSIUS, IDC_COMP_UNIT_CELSIUS);
+        CheckRadioButton(hwndDlg, IDC_COMP_UNIT_PERCENT, IDC_COMP_UNIT_VOLT, IDC_COMP_UNIT_CELSIUS);
         UpdateReferenceValueText(hwndDlg);
         UpdateUnitLabel(hwndDlg);
         GenerateOutput(hwndDlg);
